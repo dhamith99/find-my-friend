@@ -1,0 +1,10 @@
+/raw/
+/data/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+mlruns/
+mlartifacts/
+mlflow.db
+.env
+reports/*.pdf
