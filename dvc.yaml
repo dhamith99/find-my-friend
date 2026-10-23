@@ -1,0 +1,17 @@
+stages:
+  prepare:
+    cmd: python -m src.data.make_dataset
+    deps:
+      - raw
+      - src/data/make_dataset.py
+      - src/data/face.py
+      - assets/face_detection_yunet_2023mar.onnx
+    params:
+      - data
+      - face
+    outs:
+      - data
+      - reports/figures/face_crops.png   # shows faces -> stored by DVC, not Git
+    metrics:
+      - reports/data_stats.json:          # counts only, safe to keep in Git
+          cache: false

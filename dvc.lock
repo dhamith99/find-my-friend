@@ -1,0 +1,55 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data.make_dataset
+    deps:
+    - path: assets/face_detection_yunet_2023mar.onnx
+      hash: md5
+      md5: 4ae92eeb150c82ce15ac80738b3b8167
+      size: 232589
+    - path: raw
+      hash: md5
+      md5: 209bdb2b7d275c0ee306ce3250996dc3.dir
+      size: 501355440
+      nfiles: 198
+    - path: src/data/face.py
+      hash: md5
+      md5: 0927cede85da81fb53b38d6e86cce55f
+      size: 2144
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: b58755a6ab555fc7d2fb4826a2de14eb
+      size: 6650
+    params:
+      params.yaml:
+        data:
+          raw_dir: raw
+          out_dir: data
+          img_size: 224
+          val_frac: 0.15
+          test_frac: 0.15
+          group_split_classes:
+          - unknown
+          group_split:
+            train: 3
+            val: 1
+            test: 1
+        face:
+          model_path: assets/face_detection_yunet_2023mar.onnx
+          score_threshold: 0.6
+          margin: 0.2
+          max_side: 1280
+    outs:
+    - path: data
+      hash: md5
+      md5: d215b1bb01e1db53db478c4fcf84c77a.dir
+      size: 30115401
+      nfiles: 187
+    - path: reports/data_stats.json
+      hash: md5
+      md5: fdb57e743e87e2851958fb8d17936b35
+      size: 2036
+    - path: reports/figures/face_crops.png
+      hash: md5
+      md5: 6f72ca747e0b11eb709f571d5b4e2aa2
+      size: 457891

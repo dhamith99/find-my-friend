@@ -1,0 +1,4 @@
+[core]
+    remote = local
+['remote "local"']
+    url = /home/dhamith99/dvc-storage/find-my-friend

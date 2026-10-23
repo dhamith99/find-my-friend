@@ -1,0 +1,90 @@
+{
+  "classes": [
+    "dhamith",
+    "pawara",
+    "uchitha",
+    "unknown"
+  ],
+  "img_size": 224,
+  "splits": {
+    "train": {
+      "total": 124,
+      "dhamith": 34,
+      "pawara": 34,
+      "uchitha": 26,
+      "unknown": 30
+    },
+    "val": {
+      "total": 32,
+      "dhamith": 7,
+      "pawara": 8,
+      "uchitha": 7,
+      "unknown": 10
+    },
+    "test": {
+      "total": 28,
+      "dhamith": 7,
+      "pawara": 7,
+      "uchitha": 4,
+      "unknown": 10
+    }
+  },
+  "skipped": [
+    {
+      "file": "raw/dhamith/IMG_20261023_124945_TIMEBURST35.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST10.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST11.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST12.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST16.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST17.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST22.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST29.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST30.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST33.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/pawara/IMG_20261023_124750_TIMEBURST47.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST46.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST47.jpg",
+      "reason": "no face found"
+    },
+    {
+      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST48.jpg",
+      "reason": "no face found"
+    }
+  ]
+}

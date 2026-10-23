@@ -1,0 +1,19 @@
+seed: 42
+
+data:
+  raw_dir: raw
+  out_dir: data
+  img_size: 224
+  val_frac: 0.15          # friend classes: block split by burst order
+  test_frac: 0.15
+  group_split_classes: [unknown]
+  group_split:            # unknown: split by person (5 people)
+    train: 3
+    val: 1
+    test: 1
+
+face:
+  model_path: assets/face_detection_yunet_2023mar.onnx
+  score_threshold: 0.6    # lower to 0.5 if too many photos are skipped
+  margin: 0.2             # extra space around the face on each side
+  max_side: 1280          # photos are shrunk to this before detection (speed)
