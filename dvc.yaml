@@ -15,3 +15,26 @@ stages:
     metrics:
       - reports/data_stats.json:          # counts only, safe to keep in Git
           cache: false
+
+  tune:
+    foreach: [custom_cnn, mobilenet_v3_small, resnet18]
+    do:
+      cmd: python -m src.tune --model ${item}
+      deps:
+        - data
+        - src/tune.py
+        - src/train.py
+        - src/models
+        - src/data/dataset.py
+      params:
+        - seed
+        - tune
+        - train.num_workers
+      metrics:
+        - reports/tuning/${item}/best_params.json:
+            cache: false
+      plots:
+        - reports/tuning/${item}/optimization_history.png:
+            cache: false
+        - reports/tuning/${item}/param_importances.png:
+            cache: false

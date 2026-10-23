@@ -170,6 +170,7 @@ def run_training(model_name: str, hp: dict, params: dict, *, trial=None,
                 trial.report(va["f1"], epoch)
                 if trial.should_prune():
                     mlflow.set_tag("pruned", "true")
+                    mlflow.end_run(status="KILLED")   # shows as "killed", not "failed", in MLflow
                     raise optuna.TrialPruned()
 
             if bad_epochs >= hp["patience"]:

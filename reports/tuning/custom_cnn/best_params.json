@@ -1,0 +1,17 @@
+{
+  "model": "custom_cnn",
+  "best_trial": 0,
+  "best_params": {
+    "lr": 0.0005611516415334506,
+    "weight_decay": 0.006351221010640704,
+    "dropout": 0.36599697090570255,
+    "batch_size": 16
+  },
+  "best_val_f1": 1.0,
+  "best_val_acc": 1.0,
+  "best_val_loss": 0.11884202063083649,
+  "best_epoch": 25,
+  "n_trials": 20,
+  "n_complete": 9,
+  "n_pruned": 11
+}

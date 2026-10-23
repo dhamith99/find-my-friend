@@ -1,0 +1,18 @@
+{
+  "model": "resnet18",
+  "best_trial": 16,
+  "best_params": {
+    "lr": 0.000625480928000137,
+    "weight_decay": 0.004442903627036916,
+    "dropout": 0.43347498148002567,
+    "batch_size": 16,
+    "freeze": "none"
+  },
+  "best_val_f1": 1.0,
+  "best_val_acc": 1.0,
+  "best_val_loss": 0.015089248307049274,
+  "best_epoch": 12,
+  "n_trials": 20,
+  "n_complete": 13,
+  "n_pruned": 7
+}

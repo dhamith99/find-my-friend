@@ -1,0 +1,18 @@
+{
+  "model": "mobilenet_v3_small",
+  "best_trial": 5,
+  "best_params": {
+    "lr": 0.0010057690178153981,
+    "weight_decay": 1.6536937182824424e-05,
+    "dropout": 0.048836057003191935,
+    "batch_size": 16,
+    "freeze": "head"
+  },
+  "best_val_f1": 0.9117647058823528,
+  "best_val_acc": 0.90625,
+  "best_val_loss": 0.32651659846305847,
+  "best_epoch": 25,
+  "n_trials": 20,
+  "n_complete": 10,
+  "n_pruned": 10
+}

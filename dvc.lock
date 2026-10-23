@@ -53,3 +53,213 @@ stages:
       hash: md5
       md5: 626e339c927fda8afd27deac62ae8e6d
       size: 470643
+  tune@custom_cnn:
+    cmd: python -m src.tune --model custom_cnn
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    - path: src/tune.py
+      hash: md5
+      md5: 788d62689864a5edaba003f13d4327e4
+      size: 6909
+    params:
+      params.yaml:
+        seed: 42
+        train.num_workers: 2
+        tune:
+          n_trials: 20
+          epochs: 25
+          patience: 6
+          pruner_warmup_epochs: 5
+          search_space:
+            lr:
+              custom_cnn:
+              - 0.0001
+              - 0.01
+              mobilenet_v3_small:
+              - 1e-05
+              - 0.003
+              resnet18:
+              - 1e-05
+              - 0.003
+            weight_decay:
+            - 1e-06
+            - 0.01
+            dropout:
+            - 0.0
+            - 0.5
+            batch_size:
+            - 16
+            - 32
+            freeze:
+            - none
+            - head
+    outs:
+    - path: reports/tuning/custom_cnn/best_params.json
+      hash: md5
+      md5: cd1e9056c17cbe478e4f6e3d6f6c728f
+      size: 362
+    - path: reports/tuning/custom_cnn/optimization_history.png
+      hash: md5
+      md5: 4dfabb9f2a5af8e066c3001ba2064946
+      size: 32498
+    - path: reports/tuning/custom_cnn/param_importances.png
+      hash: md5
+      md5: 554821ccfde6aaf1d5363a0e1f49cb4d
+      size: 32059
+  tune@mobilenet_v3_small:
+    cmd: python -m src.tune --model mobilenet_v3_small
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    - path: src/tune.py
+      hash: md5
+      md5: 788d62689864a5edaba003f13d4327e4
+      size: 6909
+    params:
+      params.yaml:
+        seed: 42
+        train.num_workers: 2
+        tune:
+          n_trials: 20
+          epochs: 25
+          patience: 6
+          pruner_warmup_epochs: 5
+          search_space:
+            lr:
+              custom_cnn:
+              - 0.0001
+              - 0.01
+              mobilenet_v3_small:
+              - 1e-05
+              - 0.003
+              resnet18:
+              - 1e-05
+              - 0.003
+            weight_decay:
+            - 1e-06
+            - 0.01
+            dropout:
+            - 0.0
+            - 0.5
+            batch_size:
+            - 16
+            - 32
+            freeze:
+            - none
+            - head
+    outs:
+    - path: reports/tuning/mobilenet_v3_small/best_params.json
+      hash: md5
+      md5: 34264127a740cd678a38f30d6765e52b
+      size: 415
+    - path: reports/tuning/mobilenet_v3_small/optimization_history.png
+      hash: md5
+      md5: dc4e82813329f36493b6f4ce637e438b
+      size: 32724
+    - path: reports/tuning/mobilenet_v3_small/param_importances.png
+      hash: md5
+      md5: ff1c0bfdd86759512dfd2132c469ac6e
+      size: 37397
+  tune@resnet18:
+    cmd: python -m src.tune --model resnet18
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    - path: src/tune.py
+      hash: md5
+      md5: 788d62689864a5edaba003f13d4327e4
+      size: 6909
+    params:
+      params.yaml:
+        seed: 42
+        train.num_workers: 2
+        tune:
+          n_trials: 20
+          epochs: 25
+          patience: 6
+          pruner_warmup_epochs: 5
+          search_space:
+            lr:
+              custom_cnn:
+              - 0.0001
+              - 0.01
+              mobilenet_v3_small:
+              - 1e-05
+              - 0.003
+              resnet18:
+              - 1e-05
+              - 0.003
+            weight_decay:
+            - 1e-06
+            - 0.01
+            dropout:
+            - 0.0
+            - 0.5
+            batch_size:
+            - 16
+            - 32
+            freeze:
+            - none
+            - head
+    outs:
+    - path: reports/tuning/resnet18/best_params.json
+      hash: md5
+      md5: 526b37765ddb2a95fb40e22567af7622
+      size: 383
+    - path: reports/tuning/resnet18/optimization_history.png
+      hash: md5
+      md5: 5b8a8357c5b2f22897113b2e646e44d1
+      size: 33470
+    - path: reports/tuning/resnet18/param_importances.png
+      hash: md5
+      md5: 5505695f3d5cc2926363fe8fbc07d4e3
+      size: 33563
