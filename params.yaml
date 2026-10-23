@@ -66,3 +66,7 @@ final:
   seeds: [42, 43, 44]    # each model is trained 3 times; test results reported as mean ± std
   epochs: 25
   patience: 8
+
+serve:
+  alias: champion            # which registry alias the API loads
+  unknown_threshold: 0.6     # below this confidence the answer becomes "unknown"

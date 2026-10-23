@@ -9,3 +9,4 @@ mlflow.db
 .env
 reports/*.pdf
 mlflow_server.log
+logs/
