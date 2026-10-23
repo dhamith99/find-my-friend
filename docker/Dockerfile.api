@@ -1,0 +1,28 @@
+# Model serving API: loads the three @champion models from the MLflow registry.
+# CPU-only PyTorch (same version as training, so the saved models load safely).
+FROM python:3.12-slim
+
+ARG MLFLOW_VERSION=3.17.2
+RUN pip install --no-cache-dir \
+      torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu \
+ && pip install --no-cache-dir \
+      "mlflow==${MLFLOW_VERSION}" fastapi "uvicorn[standard]" python-multipart \
+      opencv-python-headless pillow pyyaml numpy tqdm
+
+WORKDIR /app
+COPY src/ src/
+COPY serving/ serving/
+COPY assets/ assets/
+COPY params.yaml .
+RUN mkdir -p /app/logs && chmod 777 /app/logs
+
+ENV HOME=/tmp \
+    PYTHONUNBUFFERED=1 \
+    MLFLOW_TRACKING_URI=http://mlflow:5000 \
+    PREDICTION_LOG=/app/logs/predictions.jsonl
+
+EXPOSE 8000
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=10 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)"
+
+CMD ["uvicorn", "serving.api:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -22,7 +22,8 @@ API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000").rstrip("/")
 STATIC = Path(__file__).parent / "static"
 
 app = FastAPI(title="Find My Friend - app", docs_url=None, redoc_url=None)
-client = httpx.AsyncClient(base_url=API_URL, timeout=20)
+# trust_env=False: calls between our own services must never go through a system proxy
+client = httpx.AsyncClient(base_url=API_URL, timeout=20, trust_env=False)
 
 
 async def forward(method: str, path: str, **kwargs) -> JSONResponse:

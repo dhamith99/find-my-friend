@@ -1,0 +1,90 @@
+# Find My Friend - all services
+#   bash scripts/docker_up.sh        (recommended: sets versions + user id, then starts)
+#   docker compose up -d --build     (manual)
+#
+#   MLflow UI + registry   http://127.0.0.1:5000
+#   Model API (docs)       http://127.0.0.1:8000/docs
+#   Real-time app          http://127.0.0.1:8501
+#
+# Start order: mlflow -> api (waits until MLflow is healthy) -> app (waits for api)
+
+x-build-args: &build-args
+  MLFLOW_VERSION: ${MLFLOW_VERSION:-3.17.2}
+
+services:
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mlflow
+      args: *build-args
+    image: find-my-friend/mlflow:latest
+    container_name: fmf-mlflow
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ./mlflow.db:/mlflow/mlflow.db             # runs, metrics, model registry
+      - ./mlartifacts:/mlflow/mlartifacts         # saved models and files
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      args: *build-args
+    image: find-my-friend/api:latest
+    container_name: fmf-api
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_ALIAS: ${MODEL_ALIAS:-champion}
+      UNKNOWN_THRESHOLD: ${UNKNOWN_THRESHOLD:-0.6}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./logs:/app/logs                          # prediction log (monitoring)
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+    image: find-my-friend/app:latest
+    container_name: fmf-app
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:8501:8501"
+    restart: unless-stopped
+
+  # Optional GPU training container - not started by "up"
+  #   docker compose --profile train run --rm train
+  train:
+    profiles: ["train"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.train
+      args: *build-args
+    image: find-my-friend/train:latest
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    volumes:
+      - .:/project
+      - ${HOME}/dvc-storage:${HOME}/dvc-storage   # DVC remote, same path as on the host
+    shm_size: "2gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

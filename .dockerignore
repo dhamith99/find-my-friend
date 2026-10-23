@@ -1,0 +1,20 @@
+# Keep the build context small: images only need code, params and the face model.
+.git
+.dvc/cache
+.dvc/tmp
+raw
+data
+mlartifacts
+mlflow.db
+mlruns
+logs
+reports
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.venv
+venv
+ml02
+*.log
+.env

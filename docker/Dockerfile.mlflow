@@ -1,0 +1,22 @@
+# MLflow tracking server + model registry.
+# Uses the project's existing mlflow.db and mlartifacts/ (mounted as volumes),
+# so every run and registered model from training is available inside Docker.
+FROM python:3.12-slim
+
+ARG MLFLOW_VERSION=3.17.2
+RUN pip install --no-cache-dir "mlflow==${MLFLOW_VERSION}"
+
+# /mlflow must be writable by the (non-root) user so SQLite can create its journal file
+RUN mkdir -p /mlflow/mlartifacts && chmod -R 777 /mlflow
+WORKDIR /mlflow
+ENV HOME=/tmp \
+    MLFLOW_SERVER_ALLOWED_HOSTS="mlflow,mlflow:*,localhost,localhost:*,127.0.0.1,127.0.0.1:*"
+
+EXPOSE 5000
+HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=10 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=4)"
+
+CMD ["mlflow", "server", \
+     "--backend-store-uri", "sqlite:////mlflow/mlflow.db", \
+     "--artifacts-destination", "/mlflow/mlartifacts", \
+     "--host", "0.0.0.0", "--port", "5000"]

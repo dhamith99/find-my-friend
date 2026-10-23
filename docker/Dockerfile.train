@@ -1,0 +1,20 @@
+# OPTIONAL: run the training pipeline (dvc repro) inside a GPU container.
+# Needs the NVIDIA Container Toolkit on the host. Normally training runs directly
+# in the ml02 environment; this image shows the pipeline is reproducible anywhere.
+#   docker compose --profile train run --rm train
+FROM pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime
+
+ARG MLFLOW_VERSION=3.17.2
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+ && rm -rf /var/lib/apt/lists/* \
+ && git config --system --add safe.directory /project
+RUN pip install --no-cache-dir "mlflow==${MLFLOW_VERSION}" dvc optuna scikit-learn \
+      opencv-python-headless matplotlib pyyaml tqdm pillow
+
+WORKDIR /project
+ENV HOME=/tmp \
+    PYTHONUNBUFFERED=1 \
+    MLFLOW_TRACKING_URI=http://mlflow:5000
+
+# the project folder (code, raw photos, DVC cache) is mounted at /project
+CMD ["dvc", "repro"]

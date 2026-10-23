@@ -28,7 +28,7 @@ def main():
     cap = cv2.VideoCapture(args.camera)
     if not cap.isOpened():
         raise SystemExit(f"Cannot open camera {args.camera}")
-    client = httpx.Client(base_url=args.api, timeout=20)
+    client = httpx.Client(base_url=args.api, timeout=20, trust_env=False)
     params = {} if args.threshold is None else {"threshold": args.threshold}
     path = "/predict_all" if args.model == "all" else "/predict"
     if args.model != "all":
