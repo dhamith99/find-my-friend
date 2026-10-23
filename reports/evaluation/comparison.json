@@ -1,0 +1,42 @@
+{
+  "custom_cnn": {
+    "test_acc_mean": 0.6552,
+    "test_acc_std": 0.0488,
+    "test_f1_mean": 0.6603,
+    "test_f1_std": 0.0549,
+    "latency_cpu_ms": 11.85,
+    "model_size_mb": 4.72,
+    "params_total": 1174244,
+    "generalization_gap_acc": -0.0231,
+    "baseline_val_f1": 1.0,
+    "tuned_val_f1": 1.0,
+    "registered": "fmf-custom_cnn v1 @champion"
+  },
+  "mobilenet_v3_small": {
+    "test_acc_mean": 0.7586,
+    "test_acc_std": 0.129,
+    "test_f1_mean": 0.7431,
+    "test_f1_std": 0.1397,
+    "latency_cpu_ms": 3.15,
+    "model_size_mb": 6.22,
+    "params_total": 1521956,
+    "generalization_gap_acc": 0.1412,
+    "baseline_val_f1": 0.6458,
+    "tuned_val_f1": 0.9118,
+    "registered": "fmf-mobilenet_v3_small v1 @champion"
+  },
+  "resnet18": {
+    "test_acc_mean": 0.9885,
+    "test_acc_std": 0.0163,
+    "test_f1_mean": 0.9901,
+    "test_f1_std": 0.0141,
+    "latency_cpu_ms": 9.68,
+    "model_size_mb": 44.79,
+    "params_total": 11178564,
+    "generalization_gap_acc": -0.0229,
+    "baseline_val_f1": 1.0,
+    "tuned_val_f1": 1.0,
+    "registered": "fmf-resnet18 v1 @champion"
+  },
+  "best_model": "resnet18"
+}

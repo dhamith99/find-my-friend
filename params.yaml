@@ -61,3 +61,8 @@ tune:
     dropout: [0.0, 0.5]
     batch_size: [16, 32]
     freeze: [none, head]   # pretrained models only
+
+final:
+  seeds: [42, 43, 44]    # each model is trained 3 times; test results reported as mean ± std
+  epochs: 25
+  patience: 8

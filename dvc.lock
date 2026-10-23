@@ -263,3 +263,239 @@ stages:
       hash: md5
       md5: 5505695f3d5cc2926363fe8fbc07d4e3
       size: 33563
+  final@custom_cnn:
+    cmd: python -m src.evaluate --model custom_cnn
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: reports/tuning/custom_cnn/best_params.json
+      hash: md5
+      md5: cd1e9056c17cbe478e4f6e3d6f6c728f
+      size: 362
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/evaluate.py
+      hash: md5
+      md5: 72539a73a14d4976a58a32cfea84052c
+      size: 10964
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/plot_style.py
+      hash: md5
+      md5: 9693c40a8a92edf450387c5081b3e828
+      size: 1219
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    params:
+      params.yaml:
+        final:
+          seeds:
+          - 42
+          - 43
+          - 44
+          epochs: 25
+          patience: 8
+        train.num_workers: 2
+    outs:
+    - path: reports/evaluation/custom_cnn/confusion_matrix.png
+      hash: md5
+      md5: 4807e458f4122ab0623652ad3e2c8de5
+      size: 37610
+    - path: reports/evaluation/custom_cnn/curves.png
+      hash: md5
+      md5: 39cfede4001bef20ac4c65644edce979
+      size: 176786
+    - path: reports/evaluation/custom_cnn/details.json
+      hash: md5
+      md5: 02ebecfc89f2856d04f356dddd5e30c9
+      size: 18983
+    - path: reports/evaluation/custom_cnn/metrics.json
+      hash: md5
+      md5: d9ae8763ebe66073832322ebe02b400d
+      size: 561
+  final@mobilenet_v3_small:
+    cmd: python -m src.evaluate --model mobilenet_v3_small
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: reports/tuning/mobilenet_v3_small/best_params.json
+      hash: md5
+      md5: 34264127a740cd678a38f30d6765e52b
+      size: 415
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/evaluate.py
+      hash: md5
+      md5: 72539a73a14d4976a58a32cfea84052c
+      size: 10964
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/plot_style.py
+      hash: md5
+      md5: 9693c40a8a92edf450387c5081b3e828
+      size: 1219
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    params:
+      params.yaml:
+        final:
+          seeds:
+          - 42
+          - 43
+          - 44
+          epochs: 25
+          patience: 8
+        train.num_workers: 2
+    outs:
+    - path: reports/evaluation/mobilenet_v3_small/confusion_matrix.png
+      hash: md5
+      md5: a3cc33058d9378588aad9ce18acf4b22
+      size: 39158
+    - path: reports/evaluation/mobilenet_v3_small/curves.png
+      hash: md5
+      md5: 7eb273b23c627741e92c2d5b421fd90a
+      size: 161826
+    - path: reports/evaluation/mobilenet_v3_small/details.json
+      hash: md5
+      md5: 03d11494188d2c5c4e1f272c0754b5a6
+      size: 15681
+    - path: reports/evaluation/mobilenet_v3_small/metrics.json
+      hash: md5
+      md5: 99b9e2c1748832aed18b521ab43fe2cc
+      size: 556
+  final@resnet18:
+    cmd: python -m src.evaluate --model resnet18
+    deps:
+    - path: data
+      hash: md5
+      md5: 12dbb2434f1a3f0611419fcbb6fd012b.dir
+      size: 31271026
+      nfiles: 194
+    - path: reports/tuning/resnet18/best_params.json
+      hash: md5
+      md5: 526b37765ddb2a95fb40e22567af7622
+      size: 383
+    - path: src/data/dataset.py
+      hash: md5
+      md5: a3305dd3d361aac0db1c32c02635a6b3
+      size: 1383
+    - path: src/evaluate.py
+      hash: md5
+      md5: 72539a73a14d4976a58a32cfea84052c
+      size: 10964
+    - path: src/models
+      hash: md5
+      md5: 44ff1fbdb88c840ecbbac3afec611e15.dir
+      size: 3331
+      nfiles: 3
+    - path: src/plot_style.py
+      hash: md5
+      md5: 9693c40a8a92edf450387c5081b3e828
+      size: 1219
+    - path: src/train.py
+      hash: md5
+      md5: dda5ed94633cdfcd7aa6908394391231
+      size: 9833
+    params:
+      params.yaml:
+        final:
+          seeds:
+          - 42
+          - 43
+          - 44
+          epochs: 25
+          patience: 8
+        train.num_workers: 2
+    outs:
+    - path: reports/evaluation/resnet18/confusion_matrix.png
+      hash: md5
+      md5: a75c0877f96f3936b73a5b9f8f4255d5
+      size: 38868
+    - path: reports/evaluation/resnet18/curves.png
+      hash: md5
+      md5: 4202730c6766aac8fe65beffd4161b1a
+      size: 160072
+    - path: reports/evaluation/resnet18/details.json
+      hash: md5
+      md5: 70a9a3fb07b9dab442ab760bcad83c1d
+      size: 15917
+    - path: reports/evaluation/resnet18/metrics.json
+      hash: md5
+      md5: b2fcfcd37653027cdd1339b3064806f7
+      size: 533
+  compare:
+    cmd: python -m src.compare
+    deps:
+    - path: reports/evaluation/custom_cnn/details.json
+      hash: md5
+      md5: 02ebecfc89f2856d04f356dddd5e30c9
+      size: 18983
+    - path: reports/evaluation/mobilenet_v3_small/details.json
+      hash: md5
+      md5: 03d11494188d2c5c4e1f272c0754b5a6
+      size: 15681
+    - path: reports/evaluation/resnet18/details.json
+      hash: md5
+      md5: 70a9a3fb07b9dab442ab760bcad83c1d
+      size: 15917
+    - path: reports/tuning/custom_cnn/best_params.json
+      hash: md5
+      md5: cd1e9056c17cbe478e4f6e3d6f6c728f
+      size: 362
+    - path: reports/tuning/mobilenet_v3_small/best_params.json
+      hash: md5
+      md5: 34264127a740cd678a38f30d6765e52b
+      size: 415
+    - path: reports/tuning/resnet18/best_params.json
+      hash: md5
+      md5: 526b37765ddb2a95fb40e22567af7622
+      size: 383
+    - path: src/compare.py
+      hash: md5
+      md5: ee937f7525d1bf3755fc738a11a0340d
+      size: 7809
+    - path: src/plot_style.py
+      hash: md5
+      md5: 9693c40a8a92edf450387c5081b3e828
+      size: 1219
+    outs:
+    - path: reports/evaluation/comparison.json
+      hash: md5
+      md5: 8407a83e9c209f2efc388c9757400d5e
+      size: 1126
+    - path: reports/evaluation/comparison.md
+      hash: md5
+      md5: 5469b0becf8cc6f5556d7dc392447744
+      size: 512
+    - path: reports/evaluation/comparison.png
+      hash: md5
+      md5: 6407ddc5d6f0ddca7b3802d9d0d83f18
+      size: 66465
+    - path: reports/evaluation/per_class_recall.png
+      hash: md5
+      md5: fce2bb3b20203f57231a4e905f851bf9
+      size: 46906
+    - path: reports/evaluation/tuning_effect.png
+      hash: md5
+      md5: 4f305267dfde34fc7b5664da69ebadd0
+      size: 43219

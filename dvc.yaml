@@ -38,3 +38,54 @@ stages:
             cache: false
         - reports/tuning/${item}/param_importances.png:
             cache: false
+
+  final:
+    foreach: [custom_cnn, mobilenet_v3_small, resnet18]
+    do:
+      cmd: python -m src.evaluate --model ${item}
+      deps:
+        - data
+        - reports/tuning/${item}/best_params.json
+        - src/evaluate.py
+        - src/train.py
+        - src/models
+        - src/data/dataset.py
+        - src/plot_style.py
+      params:
+        - final
+        - train.num_workers
+      metrics:
+        - reports/evaluation/${item}/metrics.json:
+            cache: false
+      outs:
+        - reports/evaluation/${item}/details.json:
+            cache: false
+      plots:
+        - reports/evaluation/${item}/curves.png:
+            cache: false
+        - reports/evaluation/${item}/confusion_matrix.png:
+            cache: false
+
+  compare:
+    cmd: python -m src.compare
+    deps:
+      - reports/evaluation/custom_cnn/details.json
+      - reports/evaluation/mobilenet_v3_small/details.json
+      - reports/evaluation/resnet18/details.json
+      - reports/tuning/custom_cnn/best_params.json
+      - reports/tuning/mobilenet_v3_small/best_params.json
+      - reports/tuning/resnet18/best_params.json
+      - src/compare.py
+      - src/plot_style.py
+    outs:
+      - reports/evaluation/comparison.json:
+          cache: false
+      - reports/evaluation/comparison.md:
+          cache: false
+    plots:
+      - reports/evaluation/comparison.png:
+          cache: false
+      - reports/evaluation/per_class_recall.png:
+          cache: false
+      - reports/evaluation/tuning_effect.png:
+          cache: false

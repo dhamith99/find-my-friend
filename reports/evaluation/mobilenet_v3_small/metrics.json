@@ -1,0 +1,17 @@
+{
+  "test_acc_mean": 0.7586206896551725,
+  "test_acc_std": 0.12902266850944624,
+  "test_f1_mean": 0.743085618085618,
+  "test_f1_std": 0.1397355810746299,
+  "test_recall_dhamith_mean": 1.0,
+  "test_recall_pawara_mean": 0.9047619047619048,
+  "test_recall_uchitha_mean": 0.9333333333333332,
+  "test_recall_unknown_mean": 0.39999999999999997,
+  "generalization_gap_acc_mean": 0.14118589743589746,
+  "latency_cpu_ms": 3.1507884996244684,
+  "model_size_mb": 6.21761,
+  "params_total": 1521956,
+  "registered_seed": 44,
+  "n_test": 29,
+  "registered_version": 1
+}
