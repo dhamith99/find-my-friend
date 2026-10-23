@@ -79,10 +79,12 @@ def group_split(files, counts, class_name):
 
 
 def save_grid(samples, classes, path, thumb=96, per_class=8):
-    """One row per class, first few train crops, for the report."""
+    """One row per class, evenly spaced train crops (covers all angles/people), for the report."""
     grid = Image.new("RGB", (thumb * per_class, thumb * len(classes)), "white")
     for r, name in enumerate(classes):
-        for c, img in enumerate(samples.get(name, [])[:per_class]):
+        imgs = samples.get(name, [])
+        step = max(1, len(imgs) // per_class)
+        for c, img in enumerate(imgs[::step][:per_class]):
             grid.paste(img.resize((thumb, thumb)), (c * thumb, r * thumb))
     path.parent.mkdir(parents=True, exist_ok=True)
     grid.save(path)

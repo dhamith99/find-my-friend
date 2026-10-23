@@ -8,10 +8,10 @@
   "img_size": 224,
   "splits": {
     "train": {
-      "total": 124,
+      "total": 130,
       "dhamith": 34,
       "pawara": 34,
-      "uchitha": 26,
+      "uchitha": 32,
       "unknown": 30
     },
     "val": {
@@ -22,10 +22,10 @@
       "unknown": 10
     },
     "test": {
-      "total": 28,
+      "total": 29,
       "dhamith": 7,
       "pawara": 7,
-      "uchitha": 4,
+      "uchitha": 5,
       "unknown": 10
     }
   },
@@ -35,27 +35,7 @@
       "reason": "no face found"
     },
     {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST10.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST11.jpg",
-      "reason": "no face found"
-    },
-    {
       "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST12.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST16.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST17.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST22.jpg",
       "reason": "no face found"
     },
     {
@@ -64,10 +44,6 @@
     },
     {
       "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST30.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST33.jpg",
       "reason": "no face found"
     },
     {
@@ -80,10 +56,6 @@
     },
     {
       "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST47.jpg",
-      "reason": "no face found"
-    },
-    {
-      "file": "raw/uchitha/IMG_20261023_124452_TIMEBURST48.jpg",
       "reason": "no face found"
     }
   ]
