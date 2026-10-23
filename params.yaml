@@ -14,6 +14,35 @@ data:
 
 face:
   model_path: assets/face_detection_yunet_2023mar.onnx
-  score_threshold: 0.5    # lower to 0.5 if too many photos are skipped
+  score_threshold: 0.5    # lowered from 0.6 (uchitha lost too many photos)
   margin: 0.2             # extra space around the face on each side
   max_side: 1280          # photos are shrunk to this before detection (speed)
+
+mlflow:
+  tracking_uri: http://127.0.0.1:5000   # start with: bash scripts/start_mlflow.sh
+  experiment: find-my-friend
+
+train:
+  epochs: 30
+  batch_size: 32
+  patience: 8            # stop early if val macro-F1 doesn't improve for 8 epochs
+  num_workers: 2
+  models:                # starting values - Optuna (Phase 3) will tune these
+    custom_cnn:
+      lr: 0.001
+      weight_decay: 0.0001
+      dropout: 0.3
+      freeze: none
+      pretrained: false  # trained from scratch
+    mobilenet_v3_small:
+      lr: 0.0003
+      weight_decay: 0.0001
+      dropout: 0.2
+      freeze: none
+      pretrained: true   # ImageNet weights
+    resnet18:
+      lr: 0.0003
+      weight_decay: 0.0001
+      dropout: 0.2
+      freeze: none
+      pretrained: true
