@@ -40,9 +40,12 @@ if [ ! -d raw ]; then
   dvc pull raw.dvc
 fi
 
-# Training stages log to MLflow - start the server if it is not already running
+# Training stages log to MLflow - start a local server if none is running
+# (respects MLFLOW_TRACKING_URI, e.g. when the Docker MLflow uses another port)
+MLFLOW_URI="${MLFLOW_TRACKING_URI:-http://127.0.0.1:5000}"
 MLFLOW_PID=""
-if ! curl -sf http://127.0.0.1:5000/health >/dev/null; then
+if ! curl -sf "$MLFLOW_URI/health" >/dev/null; then
+  [ "$MLFLOW_URI" = "http://127.0.0.1:5000" ] || { echo "MLflow not reachable at $MLFLOW_URI"; exit 1; }
   step "Starting MLflow server (log: mlflow_server.log)"
   bash scripts/start_mlflow.sh > mlflow_server.log 2>&1 &
   MLFLOW_PID=$!

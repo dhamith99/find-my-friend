@@ -2,9 +2,9 @@
 #   bash scripts/docker_up.sh        (recommended: sets versions + user id, then starts)
 #   docker compose up -d --build     (manual)
 #
-#   MLflow UI + registry   http://127.0.0.1:5000
-#   Model API (docs)       http://127.0.0.1:8000/docs
-#   Real-time app          http://127.0.0.1:8501
+#   MLflow UI + registry   http://127.0.0.1:5000        (laptop ports can be changed:
+#   Model API (docs)       http://127.0.0.1:8000/docs    MLFLOW_PORT, API_PORT, APP_PORT
+#   Real-time app          http://127.0.0.1:8501         e.g. MLFLOW_PORT=5050 bash scripts/docker_up.sh)
 #
 # Start order: mlflow -> api (waits until MLflow is healthy) -> app (waits for api)
 
@@ -21,7 +21,7 @@ services:
     container_name: fmf-mlflow
     user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     ports:
-      - "127.0.0.1:5000:5000"
+      - "127.0.0.1:${MLFLOW_PORT:-5000}:5000"
     volumes:
       - ./mlflow.db:/mlflow/mlflow.db             # runs, metrics, model registry
       - ./mlartifacts:/mlflow/mlartifacts         # saved models and files
@@ -43,7 +43,7 @@ services:
       MODEL_ALIAS: ${MODEL_ALIAS:-champion}
       UNKNOWN_THRESHOLD: ${UNKNOWN_THRESHOLD:-0.6}
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${API_PORT:-8000}:8000"
     volumes:
       - ./logs:/app/logs                          # prediction log (monitoring)
     restart: unless-stopped
@@ -61,7 +61,7 @@ services:
     environment:
       API_URL: http://api:8000
     ports:
-      - "127.0.0.1:8501:8501"
+      - "127.0.0.1:${APP_PORT:-8501}:8501"
     restart: unless-stopped
 
   # Optional GPU training container - not started by "up"
