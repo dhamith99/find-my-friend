@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find My Friend</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --surface: #ffffff; --line: #e4e3df;
+    --text: #0b0b0b; --text-2: #52514e; --muted: #8a8984;
+    --ok: #1a7f4b; --warn: #b35c00; --bad: #c0362c;
+    --resnet18: #2a78d6; --mobilenet_v3_small: #eb6834; --custom_cnn: #1baf7a;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+           padding: 14px 24px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 20px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  header .sub { color: var(--text-2); font-size: 13px; }
+  .pill { margin-left: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px;
+          border: 1px solid var(--line); color: var(--text-2); background: var(--bg); }
+  .pill.ok { color: var(--ok); border-color: #b9dcc8; background: #eef7f1; }
+  .pill.bad { color: var(--bad); border-color: #efc2bd; background: #fcf0ee; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px;
+         padding: 20px 24px; max-width: 1280px; margin: 0 auto; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  .stage { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #1c1c1b; }
+  .stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .stage video { transform: scaleX(-1); }      /* mirror like a selfie camera */
+  .placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: #c3c2b7;
+                 text-align: center; padding: 24px; }
+  .bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 12px 16px;
+         border-top: 1px solid var(--line); font-size: 13px; color: var(--text-2); }
+  .bar b { color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+  button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 8px; cursor: pointer;
+           border: 1px solid var(--text); background: var(--text); color: #fff; }
+  button.secondary { background: var(--surface); color: var(--text); }
+  aside { display: flex; flex-direction: column; gap: 16px; }
+  .panel { padding: 16px; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+              margin: 0 0 12px; font-weight: 600; }
+  label.field { display: block; font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+  select, input[type=range] { width: 100%; margin-top: 6px; font: inherit; }
+  select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  .model { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 10px;
+           border-left: 4px solid var(--c); }
+  .model:last-child { margin-bottom: 0; }
+  .model .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .model .name { font-size: 13px; color: var(--text-2); }
+  .model .label { font-size: 20px; font-weight: 650; text-transform: capitalize; }
+  .model .label.unknown { color: var(--text-2); }
+  .model .conf { font-variant-numeric: tabular-nums; color: var(--text-2); font-size: 13px; }
+  .probs { margin-top: 8px; display: grid; gap: 4px; }
+  .prob { display: grid; grid-template-columns: 64px 1fr 44px; align-items: center; gap: 8px;
+          font-size: 12px; color: var(--text-2); }
+  .prob .track { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+  .prob .fill { height: 100%; background: var(--c); border-radius: 3px; transition: width .15s; }
+  .prob span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 500; }
+  td { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Find My Friend</h1>
+    <div class="sub">Live face recognition · dhamith · pawara · uchitha · unknown</div>
+  </div>
+  <span id="status" class="pill">Connecting to model API…</span>
+</header>
+
+<main>
+  <section class="card" aria-label="Camera">
+    <div class="stage">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div id="placeholder" class="placeholder">Press <b>&nbsp;Start camera&nbsp;</b> and allow camera access.</div>
+    </div>
+    <div class="bar">
+      <button id="toggle">Start camera</button>
+      <span>Frames/s <b id="fps">–</b></span>
+      <span>Round trip <b id="rtt">–</b></span>
+      <span>Face <b id="face">–</b></span>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card panel">
+      <h2>Settings</h2>
+      <label class="field">Model
+        <select id="model">
+          <option value="all">Compare all three</option>
+          <option value="resnet18">ResNet18 (best on test)</option>
+          <option value="mobilenet_v3_small">MobileNetV3-small (fastest)</option>
+          <option value="custom_cnn">Custom CNN</option>
+        </select>
+      </label>
+      <label class="field">Unknown threshold: <b id="thrVal">0.60</b>
+        <input id="threshold" type="range" min="0.30" max="0.95" step="0.05" value="0.60">
+      </label>
+      <div class="note">If the model is less confident than this, the answer is "unknown".
+        When comparing all three, the box on the video shows ResNet18.</div>
+    </div>
+
+    <div class="card panel">
+      <h2>Predictions</h2>
+      <div id="results"><div class="note">Waiting for a face…</div></div>
+    </div>
+
+    <div class="card panel">
+      <h2>Monitoring (last 500 predictions)</h2>
+      <div id="stats"><div class="note">No predictions yet.</div></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const LABELS = { resnet18: "ResNet18", mobilenet_v3_small: "MobileNetV3-small", custom_cnn: "Custom CNN" };
+const COLORS = { resnet18: "#2a78d6", mobilenet_v3_small: "#eb6834", custom_cnn: "#1baf7a" };
+const SEND_WIDTH = 640;          // frames are resized to this width before sending
+const MIN_INTERVAL_MS = 150;     // at most ~6-7 frames per second
+
+const video = document.getElementById("video");
+const overlay = document.getElementById("overlay");
+const ctx = overlay.getContext("2d");
+const grab = document.createElement("canvas");
+const $ = (id) => document.getElementById(id);
+
+let stream = null, running = false, frameTimes = [];
+
+$("threshold").addEventListener("input", (e) => $("thrVal").textContent = Number(e.target.value).toFixed(2));
+$("toggle").addEventListener("click", () => running ? stop() : start());
+
+async function checkHealth() {
+  try {
+    const r = await fetch("/api/health");
+    const d = await r.json();
+    const v = Object.entries(d.models || {}).map(([m, ver]) => `${LABELS[m] || m} v${ver}`).join(" · ");
+    $("status").textContent = r.ok && v ? `API connected · ${v}` : "API up, but no models loaded";
+    $("status").className = "pill " + (r.ok && v ? "ok" : "bad");
+  } catch {
+    $("status").textContent = "Model API not reachable";
+    $("status").className = "pill bad";
+  }
+}
+
+async function start() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+  } catch (e) {
+    $("placeholder").textContent = "Camera not available: " + e.message;
+    return;
+  }
+  video.srcObject = stream;
+  await video.play();
+  $("placeholder").style.display = "none";
+  $("toggle").textContent = "Stop camera";
+  $("toggle").className = "secondary";
+  running = true;
+  loop();
+}
+
+function stop() {
+  running = false;
+  stream?.getTracks().forEach((t) => t.stop());
+  video.srcObject = null;
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+  $("placeholder").style.display = "grid";
+  $("toggle").textContent = "Start camera";
+  $("toggle").className = "";
+}
+
+async function loop() {
+  while (running) {
+    const t0 = performance.now();
+    if (video.videoWidth) {
+      const scale = SEND_WIDTH / video.videoWidth;
+      grab.width = SEND_WIDTH;
+      grab.height = Math.round(video.videoHeight * scale);
+      grab.getContext("2d").drawImage(video, 0, 0, grab.width, grab.height);
+      const blob = await new Promise((res) => grab.toBlob(res, "image/jpeg", 0.85));
+      const form = new FormData();
+      form.append("file", blob, "frame.jpg");
+      const q = new URLSearchParams({ model: $("model").value, threshold: $("threshold").value });
+      try {
+        const r = await fetch("/api/predict?" + q, { method: "POST", body: form });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.detail || r.statusText);
+        const results = d.results || (d.result ? [d.result] : []);
+        draw(d.face_found ? d.box : null, results, scale);
+        render(d.face_found, results);
+        $("rtt").textContent = Math.round(performance.now() - t0) + " ms";
+        tick();
+      } catch (e) {
+        $("results").innerHTML = `<div class="note">Error: ${e.message}</div>`;
+      }
+    }
+    const wait = MIN_INTERVAL_MS - (performance.now() - t0);
+    if (wait > 0) await new Promise((res) => setTimeout(res, wait));
+  }
+}
+
+function tick() {
+  const now = performance.now();
+  frameTimes = frameTimes.filter((t) => now - t < 2000);
+  frameTimes.push(now);
+  $("fps").textContent = (frameTimes.length / 2).toFixed(1);
+}
+
+// draw the face box + name on top of the (mirrored) video
+function draw(box, results, scale) {
+  const rect = overlay.getBoundingClientRect();
+  overlay.width = rect.width * devicePixelRatio;
+  overlay.height = rect.height * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  ctx.clearRect(0, 0, rect.width, rect.height);
+  $("face").textContent = box ? "found" : "none";
+  if (!box || !results.length) return;
+
+  // video is shown with object-fit: contain -> work out where it sits
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const k = Math.min(rect.width / vw, rect.height / vh);
+  const ox = (rect.width - vw * k) / 2, oy = (rect.height - vh * k) / 2;
+  let [x, y, w, h] = box.map((v) => v / scale);      // back to camera pixels
+  x = vw - x - w;                                      // mirror, to match the video
+  // the box shows the best model (ResNet18) when comparing all three
+  const r = results.find((m) => m.model === "resnet18") || results[0];
+  const color = COLORS[r.model] || "#ffffff";
+  const bx = ox + x * k, by = oy + y * k, bw = w * k, bh = h * k;
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = color;
+  ctx.strokeRect(bx, by, bw, bh);
+  const text = `${r.label}  ${(r.confidence * 100).toFixed(0)}%`;
+  ctx.font = "600 16px system-ui, sans-serif";
+  const tw = ctx.measureText(text).width + 16;
+  const ty = by > 30 ? by - 28 : by + bh + 2;
+  ctx.fillStyle = color;
+  ctx.fillRect(bx - 1.5, ty, tw, 26);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(text, bx + 6.5, ty + 18);
+}
+
+function render(faceFound, results) {
+  if (!faceFound) {
+    $("results").innerHTML = `<div class="note">No face in view.</div>`;
+    return;
+  }
+  $("results").innerHTML = results.map((r) => {
+    const probs = Object.entries(r.probabilities).map(([c, p]) => `
+      <div class="prob"><span>${c}</span>
+        <div class="track"><div class="fill" style="width:${(p * 100).toFixed(1)}%"></div></div>
+        <span>${(p * 100).toFixed(0)}%</span></div>`).join("");
+    const why = r.below_threshold ? ` · would be "${r.raw_label}"` : "";
+    return `<div class="model" style="--c:${COLORS[r.model]}">
+      <div class="top"><span class="name">${LABELS[r.model]} v${r.version}</span>
+        <span class="conf">${(r.confidence * 100).toFixed(1)}% · ${r.latency_ms} ms</span></div>
+      <div class="label ${r.label === "unknown" ? "unknown" : ""}">${r.label}</div>
+      <div class="note" style="margin:0">${why ? "Below threshold" + why : "&nbsp;"}</div>
+      <div class="probs">${probs}</div></div>`;
+  }).join("");
+}
+
+async function refreshStats() {
+  try {
+    const d = await (await fetch("/api/stats")).json();
+    const rows = Object.entries(d.models || {});
+    if (!rows.length) return;
+    $("stats").innerHTML = `<table>
+      <tr><th>Model</th><th>Preds</th><th>Avg conf.</th><th>→ unknown</th><th>ms</th></tr>
+      ${rows.map(([m, s]) => `<tr><td>${LABELS[m]}</td><td>${s.predictions}</td>
+        <td>${(s.mean_confidence * 100).toFixed(0)}%</td>
+        <td>${(s.below_threshold_rate * 100).toFixed(0)}%</td><td>${s.mean_latency_ms}</td></tr>`).join("")}
+      </table><div class="note">No-face frames: ${(d.no_face_rate * 100).toFixed(0)}% ·
+      "→ unknown" = answers changed to unknown by the threshold</div>`;
+  } catch { /* API down - status pill already shows it */ }
+}
+
+checkHealth();
+setInterval(checkHealth, 10000);
+setInterval(refreshStats, 3000);
+</script>
+</body>
+</html>

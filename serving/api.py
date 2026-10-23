@@ -12,11 +12,21 @@ Endpoints
   POST /predict?model=resnet18 one model   (form field "file" = image)
   POST /predict_all            all three models on the same image
   POST /reload                 load the newest @champion versions without restarting
+  GET  /stats                  live monitoring: predictions per label, confidence, latency
+
+Every prediction is appended to logs/predictions.jsonl (time, model, version,
+label, confidence, latency) - simple production monitoring. No images are stored.
 """
 from __future__ import annotations
 
 import io
+import json
+import os
+import threading
+import time
+from collections import Counter, deque
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from PIL import Image, UnidentifiedImageError
@@ -24,6 +34,35 @@ from PIL import Image, UnidentifiedImageError
 from src.inference import FacePredictor
 
 predictor: FacePredictor | None = None
+LOG_PATH = Path(os.environ.get("PREDICTION_LOG", "logs/predictions.jsonl"))
+_log_lock = threading.Lock()
+_recent = deque(maxlen=500)          # last predictions, for /stats
+_started = time.time()
+
+
+_request_no = 0
+
+
+def log_predictions(out: dict, source: str):
+    global _request_no
+    with _log_lock:
+        _request_no += 1
+        base = {"ts": round(time.time(), 3), "request": _request_no, "source": source}
+    if not out["face_found"]:
+        rows = [{**base, "face_found": False}]
+    else:
+        rows = [{**base, "face_found": True, "model": r["model"], "version": r["version"],
+                 "label": r["label"], "raw_label": r["raw_label"],
+                 "confidence": r["confidence"], "latency_ms": r["latency_ms"]}
+                for r in out["results"]]
+    with _log_lock:
+        _recent.extend(rows)
+        try:
+            LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with LOG_PATH.open("a") as f:
+                f.writelines(json.dumps(r) + "\n" for r in rows)
+        except OSError:
+            pass  # logging must never break predictions
 
 
 @asynccontextmanager
@@ -79,6 +118,7 @@ async def predict(file: UploadFile = File(...),
     check_model(model)
     img = await read_image(file)
     out = predictor.predict(img, [model], detect_face, threshold)
+    log_predictions(out, "predict")
     if not out["face_found"]:
         return {"face_found": False, "box": None, "result": None}
     return {"face_found": True, "box": out["box"], "result": out["results"][0]}
@@ -88,10 +128,37 @@ async def predict(file: UploadFile = File(...),
 async def predict_all(file: UploadFile = File(...), detect_face: bool = Query(True),
                       threshold: float | None = Query(None, ge=0, le=1)):
     img = await read_image(file)
-    return predictor.predict(img, None, detect_face, threshold)
+    out = predictor.predict(img, None, detect_face, threshold)
+    log_predictions(out, "predict_all")
+    return out
 
 
 @app.post("/reload")
 def reload():
     versions = predictor.reload()
     return {"reloaded": versions, "errors": predictor.errors}
+
+
+@app.get("/stats")
+def stats():
+    """Summary of the most recent predictions (per model): label counts, confidence, latency."""
+    with _log_lock:
+        rows = list(_recent)
+    faces = [r for r in rows if r["face_found"]]
+    per_model = {}
+    for name in predictor.models:
+        mr = [r for r in faces if r["model"] == name]
+        if not mr:
+            continue
+        per_model[name] = {
+            "predictions": len(mr),
+            "labels": dict(Counter(r["label"] for r in mr)),
+            "mean_confidence": round(sum(r["confidence"] for r in mr) / len(mr), 4),
+            "below_threshold_rate": round(sum(r["label"] != r["raw_label"] for r in mr) / len(mr), 4),
+            "mean_latency_ms": round(sum(r["latency_ms"] for r in mr) / len(mr), 2),
+        }
+    requests = {r["request"] for r in rows}
+    no_face = {r["request"] for r in rows if not r["face_found"]}
+    return {"uptime_s": round(time.time() - _started), "requests": len(requests),
+            "no_face_rate": round(len(no_face) / max(1, len(requests)), 4),
+            "models": per_model}
